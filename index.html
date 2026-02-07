@@ -5,15 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>qPCR Master Mind v4.0</title>
     
-    <!-- 核心庫：React, ReactDOM, Babel (解析JSX), Tailwind (樣式) -->
-    <script crossorigin src="[https://unpkg.com/react@18/umd/react.production.min.js](https://unpkg.com/react@18/umd/react.production.min.js)"></script>
-    <script crossorigin src="[https://unpkg.com/react-dom@18/umd/react-dom.production.min.js](https://unpkg.com/react-dom@18/umd/react-dom.production.min.js)"></script>
-    <script src="[https://unpkg.com/babel-standalone@6/babel.min.js](https://unpkg.com/babel-standalone@6/babel.min.js)"></script>
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
+    <!-- 核心庫：React, ReactDOM, Babel, Tailwind -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- 圖標庫 -->
-    <script src="[https://unpkg.com/lucide@latest](https://unpkg.com/lucide@latest)"></script>
-    <script src="[https://unpkg.com/lucide-react/dist/lucide-react.min.js](https://unpkg.com/lucide-react/dist/lucide-react.min.js)"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/lucide-react/dist/lucide-react.min.js"></script>
 
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
@@ -30,7 +30,7 @@
         const { Beaker, Calculator, Settings, TestTube, AlertCircle, Droplet, Info, FlaskConical, AlertTriangle, Syringe, Globe } = lucide;
 
         // ==========================================
-        // 📝 文案設定區 (在此修改文字)
+        // 📝 文案設定區
         // ==========================================
         const translations = {
             zh: {
@@ -55,22 +55,17 @@
                 infoTarget: "每孔目標量",
                 infoConc: "工作濃度",
                 infoNote: "* 系統假設 RT 反應後總體積為",
-                
-                // 右側 - 稀釋卡片
                 dilutionTitle: "Sample 稀釋配方",
                 modeA_Title: "標準兩段式稀釋 (Standard)",
                 modeA_Desc: "RNA量充足 (≥400ng)，採兩段稀釋。先配製中間 Stock，再稀釋 10 倍。",
                 modeB_Title: "精準直配模式 (Direct)",
                 modeB_Desc: "RNA量較低 (<400ng)，不進行中間稀釋，直接依濃度計算原液取用量。",
-                
                 warnTitle: "cDNA 原液不足！",
                 warnDesc: "計算需求量超過您的 RT 產物總量。請檢查實驗設計或減少損耗係數。",
                 warnTag: "庫存不足",
-                
                 step1: "步驟 1: 配製 Stock Solution",
                 step2: "步驟 2: 配製 Working Solution",
                 step2_Direct: "步驟 1: 直接配製 Working Solution",
-                
                 targetLabel: "目標",
                 sourceCDNA: "取 cDNA 原液",
                 addWater: "加入無菌水",
@@ -79,8 +74,6 @@
                 takeSource: "取",
                 distributeNote: "分裝至",
                 tubes: "個管",
-                
-                // 右側 - MM 卡片
                 mmTitle: "Master Mix 配方表 (單一基因)",
                 mmDesc: "配製完成後，分裝 12 μL 至各個 Well 中。",
                 rxn: "反應數 (Rxn)",
@@ -113,21 +106,17 @@
                 infoTarget: "Target Mass",
                 infoConc: "Working Conc",
                 infoNote: "* Assuming RT total volume is",
-                
                 dilutionTitle: "Sample Dilution Plan",
                 modeA_Title: "Standard Mode (Two-step)",
                 modeA_Desc: "High RNA (≥400ng). Create intermediate Stock, then dilute 10x.",
                 modeB_Title: "Direct Mode (Precision)",
                 modeB_Desc: "Low RNA (<400ng). Calculate direct dilution volume for precision.",
-                
                 warnTitle: "Insufficient cDNA!",
                 warnDesc: "Required volume exceeds your total RT product. Please check design.",
                 warnTag: "Insufficient Vol",
-                
                 step1: "Step 1: Prepare Stock Solution",
                 step2: "Step 2: Prepare Working Solution",
                 step2_Direct: "Step 1: Prepare Working Solution",
-                
                 targetLabel: "Target",
                 sourceCDNA: "Take cDNA",
                 addWater: "Add Water",
@@ -136,7 +125,6 @@
                 takeSource: "Take",
                 distributeNote: "Distribute to",
                 tubes: "tubes",
-                
                 mmTitle: "Master Mix Recipe (Per Gene)",
                 mmDesc: "After mixing, dispense 12 μL into each well.",
                 rxn: "Rxns",
@@ -148,10 +136,6 @@
                 footerTotal: " Total"
             }
         };
-
-        // ==========================================
-        // ⚛️ UI 元件
-        // ==========================================
 
         const Card = ({ children, className = "" }) => (
             <div className={`bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden ${className}`}>
@@ -223,30 +207,21 @@
             </div>
         );
 
-        // ==========================================
-        // 🚀 主程式邏輯
-        // ==========================================
-
         function App() {
-            // 語言設定 'zh' or 'en'
             const [lang, setLang] = useState('zh');
-            const t = translations[lang]; // 根據語言選擇對應的文字包
+            const t = translations[lang];
 
-            // 狀態變數
             const [rnaMass, setRnaMass] = useState(1000);   
             const [cDNAVol, setCDNAVol] = useState(20);     
             const [geneCount, setGeneCount] = useState(3);  
             const [sampleCount, setSampleCount] = useState(6); 
             const [replicates, setReplicates] = useState(2); 
             const [wellVol, setWellVol] = useState(8);      
-
-            // 進階設定
             const [targetMass, setTargetMass] = useState(4);   
             const [workLossFactor, setWorkLossFactor] = useState(1.25);
             const [mixLossFactor, setMixLossFactor] = useState(1.1);
             const [showAdvanced, setShowAdvanced] = useState(false);
 
-            // 計算邏輯
             const cDNAConc = rnaMass / cDNAVol;
             const targetConc = targetMass / wellVol; 
             const totalWorkVolNeeded = (geneCount * replicates * wellVol) * workLossFactor;
@@ -260,10 +235,8 @@
                 const intermediateFactor = 10;
                 const stockTargetConc = targetConc * intermediateFactor; 
                 const stockNeededForWork = totalWorkVolNeeded / intermediateFactor;
-                
                 let rawVOrig = (stockTargetConc * stockNeededForWork) / cDNAConc;
                 let vOrig = Math.max(MIN_PIPETTE_VOL, Math.ceil(rawVOrig * 10) / 10);
-                
                 const stockTotalVol = (cDNAConc * vOrig) / stockTargetConc;
                 const stockWater = stockTotalVol - vOrig;
                 const isInsufficient = vOrig > CDNA_LIMIT_VOL;
@@ -275,14 +248,14 @@
                     description: t.modeA_Desc,
                     isInsufficient,
                     step1: {
-                        label: `${t.step1}`,
+                        label: t.step1,
                         targetLabel: `${t.targetLabel}: ${stockTargetConc.toFixed(2)} ng/μL`,
                         cDNA: vOrig,
                         water: stockWater,
                         total: stockTotalVol,
                     },
                     step2: {
-                        label: `${t.step2}`,
+                        label: t.step2,
                         targetLabel: `${t.targetLabel}: ${targetConc.toFixed(2)} ng/μL`,
                         sourceVol: stockNeededForWork,
                         sourceName: t.takeStock,
@@ -294,7 +267,6 @@
                 let rawVOrig = (targetConc * totalWorkVolNeeded) / cDNAConc;
                 let vOrig = rawVOrig;
                 let finalTotalVol = totalWorkVolNeeded;
-                
                 if (vOrig < MIN_PIPETTE_VOL) {
                     vOrig = MIN_PIPETTE_VOL;
                     finalTotalVol = (cDNAConc * vOrig) / targetConc;
@@ -302,7 +274,6 @@
                     vOrig = Math.ceil(rawVOrig * 10) / 10;
                     finalTotalVol = (cDNAConc * vOrig) / targetConc;
                 }
-
                 const waterNeeded = finalTotalVol - vOrig;
                 const isInsufficient = vOrig > CDNA_LIMIT_VOL;
 
@@ -337,16 +308,13 @@
             return (
                 <div className="min-h-screen bg-slate-50 p-4 font-sans text-slate-800 fade-in">
                 <div className="max-w-5xl mx-auto space-y-6">
-                    {/* Header */}
                     <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-200">
                     <div className="flex-1">
                         <h1 className="text-2xl md:text-3xl font-bold text-emerald-800 flex items-center gap-2">
                         <Calculator className="w-8 h-8" />
                         {t.appTitle}
                         </h1>
-                        <p className="text-slate-500 mt-1">
-                        {t.appSubtitle}
-                        </p>
+                        <p className="text-slate-500 mt-1">{t.appSubtitle}</p>
                     </div>
                     <div className="flex items-center gap-3">
                         <button 
@@ -367,9 +335,7 @@
                         </button>
                     </div>
                     </header>
-
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    {/* LEFT COLUMN: Inputs */}
                     <div className="lg:col-span-4 space-y-6">
                         <Card>
                         <CardHeader title={t.inputsTitle} icon={Settings} />
@@ -379,15 +345,12 @@
                             value={rnaMass} onChange={setRnaMass} min={1} step={50}
                             subtext={<span className="flex items-center gap-1"><Syringe className="w-3 h-3"/> {t.subMass} <b>{cDNAConc.toFixed(1)} ng/μL</b></span>}
                             />
-                            
                             <InputGroup label={t.labelGene} unit="Genes" value={geneCount} onChange={setGeneCount} min={1} />
                             <InputGroup label={t.labelSample} unit="Samples" value={sampleCount} onChange={setSampleCount} min={1} />
-                            
                             <div className="grid grid-cols-2 gap-4">
                             <InputGroup label={t.labelRep} value={replicates} onChange={setReplicates} min={1} />
                             <InputGroup label={t.labelWellVol} unit="μL" value={wellVol} onChange={setWellVol} min={1} />
                             </div>
-
                             <div className="pt-4 border-t border-slate-100">
                             <button 
                                 onClick={() => setShowAdvanced(!showAdvanced)}
@@ -396,7 +359,6 @@
                                 <span>{t.advancedSettings}</span>
                                 <Settings className="w-4 h-4" />
                             </button>
-                            
                             {showAdvanced && (
                                 <div className="mt-4 grid grid-cols-1 gap-4 bg-slate-50 p-3 rounded-lg border border-slate-100 animate-in fade-in slide-in-from-top-2">
                                 <InputGroup label={t.labelRTVol} unit="μL" value={cDNAVol} onChange={setCDNAVol} min={10} max={100} subtext={t.subRTVol} />
@@ -408,7 +370,6 @@
                             </div>
                         </CardContent>
                         </Card>
-
                         <div className="bg-emerald-50 rounded-xl p-4 border border-emerald-100 text-emerald-800 text-sm flex gap-3">
                         <Info className="w-5 h-5 shrink-0 mt-0.5" />
                         <div>
@@ -421,11 +382,7 @@
                         </div>
                         </div>
                     </div>
-
-                    {/* RIGHT COLUMN: Results */}
                     <div className="lg:col-span-8 space-y-6">
-                        
-                        {/* Module 2: Sample Dilution */}
                         <Card className={`border-t-4 ${isHighMass ? 'border-t-blue-500' : 'border-t-orange-500'}`}>
                         <CardHeader 
                             title={t.dilutionTitle} 
@@ -444,8 +401,6 @@
                                 <p>{dilutionPlan.description}</p>
                             </div>
                             </div>
-
-                            {/* Global Insufficient Warning */}
                             {dilutionPlan.isInsufficient && (
                             <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3 animate-pulse">
                                 <AlertTriangle className="w-6 h-6 text-red-600 shrink-0" />
@@ -455,9 +410,7 @@
                                 </div>
                             </div>
                             )}
-
                             <div className="space-y-8">
-                            {/* Step 1 Display (Only for Mode A) */}
                             {dilutionPlan.step1 && (
                                 <div className="relative pl-6 border-l-2 border-slate-200">
                                 <div className="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-slate-200 border-2 border-white"></div>
@@ -484,8 +437,6 @@
                                 </div>
                                 </div>
                             )}
-
-                            {/* Step 2 Display */}
                             <div className={`relative pl-6 border-l-2 ${isHighMass ? 'border-blue-200' : 'border-orange-200'}`}>
                                 <div className={`absolute -left-[9px] top-0 w-4 h-4 rounded-full border-2 border-white ${isHighMass ? 'bg-blue-500' : 'bg-orange-500'}`}></div>
                                 <h4 className={`font-bold mb-3 flex items-center gap-2 ${isHighMass ? 'text-blue-800' : 'text-orange-800'}`}>
@@ -514,21 +465,16 @@
                             </div>
                         </CardContent>
                         </Card>
-
-                        {/* Module 3: Master Mix */}
                         <Card className="border-t-4 border-t-emerald-500">
                         <CardHeader title={t.mmTitle} icon={TestTube} color="text-emerald-600" />
                         <CardContent>
                             <div className="flex justify-between items-end mb-4">
-                            <p className="text-sm text-slate-500">
-                                {t.mmDesc}
-                            </p>
+                            <p className="text-sm text-slate-500">{t.mmDesc}</p>
                             <div className="text-right">
                                 <span className="text-xs text-slate-400 block">{t.rxn}</span>
                                 <span className="font-mono font-bold text-xl text-emerald-700">{displayRxnNum}</span>
                             </div>
                             </div>
-
                             <div className="overflow-hidden rounded-lg border border-slate-200">
                             <table className="w-full text-sm text-left">
                                 <thead className="bg-slate-50 text-slate-600 font-semibold border-b border-slate-200">
@@ -570,21 +516,17 @@
                                 </tbody>
                             </table>
                             </div>
-                            
                             <div className="mt-4 flex gap-2 text-xs text-slate-400 items-center justify-end">
                             <Droplet className="w-3 h-3" />
                             <span>{t.footerNote}{wellVol} μL cDNA + 12 μL MM = {wellVol + 12} μL{t.footerTotal}</span>
                             </div>
                         </CardContent>
                         </Card>
-
                     </div>
                     </div>
-
                     <footer className="text-center text-slate-400 text-sm py-6">
                     <p>© {new Date().getFullYear()} Laboratory qPCR Assistant v4.0</p>
                     </footer>
-
                 </div>
                 </div>
             );
